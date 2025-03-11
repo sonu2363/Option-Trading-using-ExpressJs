@@ -78,3 +78,12 @@
 {"level":"info","message":"Data sync completed successfully","timestamp":"2025-03-11T12:46:45.184Z"}
 {"level":"info","message":"Data sync completed successfully","timestamp":"2025-03-11T15:51:19.329Z"}
 {"level":"info","message":"Data sync completed successfully","timestamp":"2025-03-11T19:43:28.583Z"}
+{"level":"info","message":"Successfully connected to MongoDB.","timestamp":"2025-03-11T20:08:13.325Z"}
+{"level":"info","message":"Server running in development mode on port 3000","timestamp":"2025-03-11T20:08:13.335Z"}
+{"level":"info","message":"API endpoints available at /api","timestamp":"2025-03-11T20:08:13.337Z"}
+{"level":"info","message":"WebSocket server running at /ws","timestamp":"2025-03-11T20:08:13.339Z"}
+{"level":"info","message":"Successfully connected to MongoDB.","timestamp":"2025-03-11T20:16:22.221Z"}
+{"level":"info","message":"Server running in development mode on port 3000","timestamp":"2025-03-11T20:16:22.235Z"}
+{"level":"info","message":"API endpoints available at /api","timestamp":"2025-03-11T20:16:22.237Z"}
+{"level":"info","message":"WebSocket server running at /ws","timestamp":"2025-03-11T20:16:22.238Z"}
+{"level":"info","message":"Data sync completed successfully","timestamp":"2025-03-11T20:21:18.094Z"}
