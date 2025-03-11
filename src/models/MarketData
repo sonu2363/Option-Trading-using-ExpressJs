@@ -1,0 +1,140 @@
+const mongoose = require('mongoose');
+
+const marketDataSchema = new mongoose.Schema({
+    event: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Event',
+        required: true,
+        index: true
+    },
+    odds: [{
+        option: {
+            type: String,
+            required: true
+        },
+        value: {
+            type: Number,
+            required: true,
+            min: 1.0
+        },
+        volume: {
+            type: Number,
+            default: 0,
+            min: 0
+        },
+        timestamp: {
+            type: Date,
+            default: Date.now
+        }
+    }],
+    marketMetrics: {
+        totalVolume: {
+            type: Number,
+            default: 0
+        },
+        openInterest: {
+            type: Number,
+            default: 0
+        },
+        volatility: {
+            type: Number,
+            default: 0
+        }
+    },
+    priceHistory: [{
+        option: String,
+        price: Number,
+        timestamp: {
+            type: Date,
+            default: Date.now
+        }
+    }],
+    marketStatus: {
+        type: String,
+        enum: ['open', 'closed', 'suspended'],
+        default: 'open'
+    },
+    lastUpdate: {
+        type: Date,
+        default: Date.now
+    }
+}, {
+    timestamps: true
+});
+
+// Indexes for performance
+marketDataSchema.index({ event: 1, 'odds.timestamp': -1 });
+marketDataSchema.index({ marketStatus: 1 });
+marketDataSchema.index({ lastUpdate: -1 });
+
+// Methods to update market data
+marketDataSchema.methods.updateOdds = function(newOdds) {
+    // Store previous odds in price history
+    this.priceHistory.push(...this.odds.map(odd => ({
+        option: odd.option,
+        price: odd.value,
+        timestamp: odd.timestamp
+    })));
+
+    // Update current odds
+    this.odds = newOdds.map(odd => ({
+        ...odd,
+        timestamp: new Date()
+    }));
+
+    this.lastUpdate = new Date();
+};
+
+// Calculate market volatility
+marketDataSchema.methods.calculateVolatility = function() {
+    const priceChanges = this.priceHistory.reduce((acc, curr) => {
+        if (!acc[curr.option]) {
+            acc[curr.option] = [];
+        }
+        acc[curr.option].push(curr.price);
+        return acc;
+    }, {});
+
+    let totalVolatility = 0;
+    let count = 0;
+
+    Object.values(priceChanges).forEach(prices => {
+        if (prices.length > 1) {
+            const changes = prices.slice(1).map((price, i) => 
+                Math.abs((price - prices[i]) / prices[i])
+            );
+            totalVolatility += changes.reduce((a, b) => a + b, 0) / changes.length;
+            count++;
+        }
+    });
+
+    this.marketMetrics.volatility = count > 0 ? totalVolatility / count : 0;
+};
+
+// Update market metrics
+marketDataSchema.methods.updateMetrics = async function() {
+    const trades = await mongoose.model('Trade').find({
+        event: this.event,
+        status: 'pending'
+    });
+
+    this.marketMetrics.openInterest = trades.length;
+    this.marketMetrics.totalVolume = trades.reduce((sum, trade) => 
+        sum + trade.amount, 0
+    );
+
+    this.calculateVolatility();
+};
+
+// Static method to get active markets
+marketDataSchema.statics.getActiveMarkets = function() {
+    return this.find({
+        marketStatus: 'open'
+    })
+    .populate('event', 'title type status')
+    .sort({ lastUpdate: -1 });
+};
+
+const MarketData = mongoose.model('MarketData', marketDataSchema);
+
+module.exports = MarketData;
