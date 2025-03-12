@@ -87,3 +87,7 @@
 {"level":"info","message":"API endpoints available at /api","timestamp":"2025-03-11T20:16:22.237Z"}
 {"level":"info","message":"WebSocket server running at /ws","timestamp":"2025-03-11T20:16:22.238Z"}
 {"level":"info","message":"Data sync completed successfully","timestamp":"2025-03-11T20:21:18.094Z"}
+{"level":"info","message":"Successfully connected to MongoDB.","timestamp":"2025-03-12T11:10:30.369Z"}
+{"level":"info","message":"Server running in development mode on port 3000","timestamp":"2025-03-12T11:10:30.378Z"}
+{"level":"info","message":"API endpoints available at /api","timestamp":"2025-03-12T11:10:30.380Z"}
+{"level":"info","message":"WebSocket server running at /ws","timestamp":"2025-03-12T11:10:30.381Z"}
